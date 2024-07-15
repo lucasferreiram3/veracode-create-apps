@@ -21,8 +21,8 @@ teams_default = ['Showroom_Lucas', 'Showroom Pré-Vendas']
 squad = ''
 lider = ''
 po = ''
-possui_api = bool
-exposed = bool
+possui_api = ['yes', 'no']
+exposed = ['yes', 'no']
 owner = 'example@exe.com.br'
 custom_fields = []
 
@@ -32,8 +32,8 @@ def main():
     #getPolicyGuid('Veracode Recommended Low')
     #getBuGuid(business_unit)
     #getTeamsGuid('Showroom_Lucas')
-    #checkAppProfile(appName)
-    print(getAppGuid(appName))
+    checkAppProfile(appName)
+    #print(getAppGuid(appName))
 
 # Retorna o GUID da política
 def getPolicyGuid(p):
@@ -76,7 +76,7 @@ def checkAppProfile(appName):
         for i in app_profiles:
             if appName in app_profiles:
                 print("App profile já existe na plataforma")
-                print(f'GUID: {getBuGuid(appName)}')
+                print(f'App: [{appName}] | GUID: [{getAppGuid(appName)}]')
                 break
             else:
                 print("App profile não existe na plataforma\n")
