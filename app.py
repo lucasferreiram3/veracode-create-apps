@@ -121,20 +121,21 @@ json_str = json.dumps(payload)
 
 def main():
   
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(description='CLI para criação de Apps Profiles na plataforma Veracode')
 
-  parser.add_argument('-an', '--app-name', required=True, dest='app_name', help='Application Name')
-  parser.add_argument('-criticality', '--business-criticality', dest='business_criticality', required=True, help='Business Criticality')
-  parser.add_argument('-ow', '--owner', required=True, dest='business_owner', help='Business Owner')
-  parser.add_argument('-bu', '--business-unit', required=True, dest='business_unit', help='BU')
-  parser.add_argument('-sq', '--squad', required=True, dest='squad_responsavel', help='SQ')
-  parser.add_argument('-po', '--product-owner', required=True, dest='product_owner', help='PO')
-  parser.add_argument('-api', '--possui-api', required=True, dest='possui_api', help='API')
-  parser.add_argument('-ex', '--exposed', required=True, dest='exposed_internet', help='EX')
-  parser.add_argument('-de', '--description', required=True, dest='description', help='DE')
-  parser.add_argument('-pl', '--policy', required=True, dest='policy', help='PL')
-  parser.add_argument('-tm', '--teams', required=True, dest='teams', help='TM')
+  parser.add_argument('--app-name', required=True, dest='app_name', help='Application Name')
+  parser.add_argument('-criticality',  dest='business_criticality', required=True, help='Business Criticality')
+  parser.add_argument('--owner', required=True, dest='business_owner', help='Business Owner')
+  parser.add_argument('--business-unit', required=True, dest='business_unit', help='Business Unit')
+  parser.add_argument('--squad', required=True, dest='squad_responsavel', help='Squad')
+  parser.add_argument('--product-owner', required=True, dest='product_owner', help='Product Owner')
+  parser.add_argument('--possui-api', required=True, dest='possui_api', help='Possui API?')
+  parser.add_argument('--exposed', required=True, dest='exposed_internet', help='Está exposto para Internet?')
+  parser.add_argument('--description', required=True, dest='description', help='Breve Descrição do App')
+  parser.add_argument('--policy', required=True, dest='policy', help='Política de segurança')
+  parser.add_argument('--teams', required=True, dest='teams', help='Times responsáveis')
 
+  args = parser.parse_args()
 
 # Retorna o GUID da política
 def getPolicyGuid(p):
