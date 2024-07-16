@@ -115,14 +115,17 @@ payload = {
       }
     ]
 }
+
+json_str = json.dumps(payload)
 # ---------------------------------------------- FUNCOES  ---------------------------------------------- #
 
 def main():
 
     #checkAppProfile(appName)
-    print(getAppGuid(appName))
-    print(getPolicyGuid(default_policy))
-    print(getBuGuid(business_unit))
+    #print(getAppGuid(appName))
+    #print(getPolicyGuid(default_policy))
+    #print(getBuGuid(business_unit))
+    print(json_str)
 
 # Retorna o GUID da política
 def getPolicyGuid(p):
