@@ -12,7 +12,7 @@ import argparse
 
 api_base = "https://api.veracode.com/appsec/v1"
 headers = {"User-Agent": "Python HMAC Example"}
-appName = "verademo-dotnetcore"
+appName = ''
 criticality = ''
 business_unit = 'M3_Prevendas'
 owner = 'example@exe.com.br'
@@ -120,12 +120,21 @@ json_str = json.dumps(payload)
 # ---------------------------------------------- FUNCOES  ---------------------------------------------- #
 
 def main():
+  
+  parser = argparse.ArgumentParser()
 
-    #checkAppProfile(appName)
-    #print(getAppGuid(appName))
-    #print(getPolicyGuid(default_policy))
-    #print(getBuGuid(business_unit))
-    print(json_str)
+  parser.add_argument('-an', '--app-name', required=True, dest='app_name', help='Application Name')
+  parser.add_argument('-criticality', '--business-criticality', dest='business_criticality', required=True, help='Business Criticality')
+  parser.add_argument('-ow', '--owner', required=True, dest='business_owner', help='Business Owner')
+  parser.add_argument('-bu', '--business-unit', required=True, dest='business_unit', help='BU')
+  parser.add_argument('-sq', '--squad', required=True, dest='squad_responsavel', help='SQ')
+  parser.add_argument('-po', '--product-owner', required=True, dest='product_owner', help='PO')
+  parser.add_argument('-api', '--possui-api', required=True, dest='possui_api', help='API')
+  parser.add_argument('-ex', '--exposed', required=True, dest='exposed_internet', help='EX')
+  parser.add_argument('-de', '--description', required=True, dest='description', help='DE')
+  parser.add_argument('-pl', '--policy', required=True, dest='policy', help='PL')
+  parser.add_argument('-tm', '--teams', required=True, dest='teams', help='TM')
+
 
 # Retorna o GUID da política
 def getPolicyGuid(p):
@@ -189,6 +198,8 @@ def getAppGuid(a):
     else:
         print(response.status_code)
 
+def createApp():
+    pass
 
 if __name__ == "__main__":
 
