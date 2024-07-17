@@ -11,10 +11,11 @@ import argparse
 # ---------------------------------------------- VARIAVEIS  ---------------------------------------------- #
 
 api_base = "https://api.veracode.com/appsec/v1"
+api_base2 = "https://api.veracode.com/api/authn/v2/"
 headers = {"User-Agent": "Python HMAC Example"}
 appName = ''
 criticality = ''
-business_unit = 'M3_Prevendas'
+business_unit = 'M3_PreVendas'
 owner = 'example@exe.com.br'
 custom_fields = []
 squad = ''
@@ -25,11 +26,13 @@ exposed = ''
 description = ''
 policy = ''
 teams = ''
+#bu_default = []
+bu_name = ''
+bu_id = ''
 app_profiles = []
 guid_profiles = []
 default_policy = 'Veracode Recommended Low'
 teams_default = ['Showroom_Lucas', 'Showroom Pré-Vendas']
-
 #default_policy = 'CIP Medium + SCA'
 #teams_default = ["DevSecOps", "CDE Projetos e Arquitetura de Segurança", "API-Services", "Auditoria Interna", "Cyber Security"]
 #business_unit = 'SAP'
@@ -120,22 +123,27 @@ json_str = json.dumps(payload)
 # ---------------------------------------------- FUNCOES  ---------------------------------------------- #
 
 def main():
-  
+ 
+  print(getBuGuid(business_unit))
+
+
+def args():
   parser = argparse.ArgumentParser(description='CLI para criação de Apps Profiles na plataforma Veracode')
 
-  parser.add_argument('--app-name', required=True, dest='app_name', help='Application Name')
-  parser.add_argument('-criticality',  dest='business_criticality', required=True, help='Business Criticality')
-  parser.add_argument('--owner', required=True, dest='business_owner', help='Business Owner')
-  parser.add_argument('--business-unit', required=True, dest='business_unit', help='Business Unit')
-  parser.add_argument('--squad', required=True, dest='squad_responsavel', help='Squad')
-  parser.add_argument('--product-owner', required=True, dest='product_owner', help='Product Owner')
-  parser.add_argument('--possui-api', required=True, dest='possui_api', help='Possui API?')
-  parser.add_argument('--exposed', required=True, dest='exposed_internet', help='Está exposto para Internet?')
-  parser.add_argument('--description', required=True, dest='description', help='Breve Descrição do App')
-  parser.add_argument('--policy', required=True, dest='policy', help='Política de segurança')
-  parser.add_argument('--teams', required=True, dest='teams', help='Times responsáveis')
+  parser.add_argument('--app-name', required=True, help='Application Name')
+  parser.add_argument('-criticality',  required=True, help='Business Criticality')
+  parser.add_argument('--owner', required=True, help='Business Owner')
+  parser.add_argument('--business-unit', required=True, help='Business Unit')
+  parser.add_argument('--squad', required=True, help='Squad')
+  parser.add_argument('--product-owner', required=True, help='Product Owner')
+  parser.add_argument('--possui-api', required=True, help='Possui API?')
+  parser.add_argument('--exposed', required=True, help='Está exposto para Internet?')
+  parser.add_argument('--description', required=True, help='Breve Descrição do App')
+  parser.add_argument('--policy', required=True, help='Política de segurança')
+  parser.add_argument('--teams', required=True, help='Times responsáveis')
 
   args = parser.parse_args()
+  appName = args.appname
 
 # Retorna o GUID da política
 def getPolicyGuid(p):
@@ -146,10 +154,16 @@ def getPolicyGuid(p):
 
 # Retorna o GUID da Business Unit
 def getBuGuid(b):
-    data = BusinessUnits().get_all()
-    for i in data:
-        if i["bu_name"] == "M3_PreVendas":
-            return i["bu_id"]
+  data = BusinessUnits().get_all()
+  for i in data:
+    bu_name = i["bu_name"]
+    bu_id = i["bu_id"]
+
+    # bu informada existe na plataforma?
+    if b == bu_name:
+        return bu_id
+    else:
+        return f'{bu_name} não existe'
 
 # Retorna o GUID dos times
 def getTeamsGuid(t):
