@@ -6,7 +6,6 @@ from veracode_api_py import Teams
 import requests
 import json
 import sys
-import argparse
 
 # ---------------------------------------------- VARIAVEIS  ---------------------------------------------- #
 
@@ -17,7 +16,7 @@ criticality = ''
 businessUnit = ''
 ownerName = ''
 ownerEmail = ''
-custom_fields = []
+customFields = []
 squad = ''
 lider = ''
 po = ''
@@ -26,27 +25,43 @@ exposed = ''
 description = ''
 policy = ''
 teams = []
-teams_default = ['Showroom_Lucas', 'Showroom Pré-Vendas']
-bu_name = ''
-bu_id = ''
 app_profiles = []
-#default_policy = 'Veracode Recommended Low'
 
-# ---------------------------------------------- FUNCOES  ---------------------------------------------- #
+# ---------------------------------------------- FUNCAO PRINCIPAL  ---------------------------------------------- #
 
 def main():
 
   appName = input('Nome da aplicação: ')
   criticality = input('Criticidade para o negócio: ')
+  policy = input('Indique a Policy: ')
   businessUnit = input('Business Unit: ')
 
   while True:
-      t = input('Indique os Teams ou q para sair: ')
+      t = input('Indique os Teams/Squad ou q para sair: ')
       if t == 'q':
           break
       teams.append(t)
-      
-  policy = input('Indique a Policy: ')
+  
+  ownerName = input('Nome do Business Onwer')
+  ownerEmail = input('Email do Business Onwer')
+  
+  while True:
+    print('Indique os valores dos Custom Fields\n')
+    squad = input('Squad Responsável: ')
+    customFields.append(squad)
+    lider = input('Líder Técnico: ')
+    customFields.append(lider)
+    po = input('Product Owner: ')
+    customFields.append(po)
+    possuiApi = input('Possui API? (Sim ou Não): ')
+    customFields.append(possuiApi)
+    exposed =  input('Sofre exposição à internet? (Sim ou Não): ')
+    customFields.append(exposed)
+    break
+
+  createApp(appName, criticality, businessUnit, teams, policy, customFields, ownerName, ownerEmail)
+
+# ---------------------------------------------- FUNCOES  ---------------------------------------------- #
 
 def createApp(appName, criticality, businessUnit, teams, policy, custom_fields, ownerName, ownerEmail):
     Applications.create(app_name=appName, business_criticality=criticality, business_unit=getAppGuid(businessUnit), teams=getTeamsGuid(teams), policy_guid=getPolicyGuid(policy), custom_fields=custom_fields, bus_owner_name=ownerName, bus_owner_email=ownerEmail)
@@ -61,6 +76,8 @@ def getPolicyGuid(p):
 # Retorna o GUID da Business Unit
 def getBuGuid(b):
   data = BusinessUnits().get_all()
+  bu_name = ''
+  bu_id = ''
   for i in data:
     bu_name = i["bu_name"]
     bu_id = i["bu_id"]
@@ -71,7 +88,7 @@ def getBuGuid(b):
     else:
         return f'{bu_name} não existe'
 
-# Retorna o GUID dos times
+# Retorna o GUID dos times informados
 def getTeamsGuid(t):
     data = Teams().get_all(t)
     team_id = []
@@ -81,7 +98,7 @@ def getTeamsGuid(t):
     
     return team_id
 
-# Retorna o perfil de aplicação já existe na plataforma      
+# Retorna se o perfil de aplicação já existe na plataforma      
 def checkAppProfile(appName):
     try:
         response = requests.get(api_base + "/applications", auth=RequestsAuthPluginVeracodeHMAC(), headers=headers)
@@ -125,5 +142,4 @@ def getAppGuid(a):
 # ---------------------------------------------- EXECUCAO  ---------------------------------------------- #
 
 if __name__ == "__main__":
-
     main()
