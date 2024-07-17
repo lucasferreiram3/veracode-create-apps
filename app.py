@@ -14,13 +14,13 @@ api_base = "https://api.veracode.com/appsec/v1"
 headers = {"User-Agent": "Python HMAC Example"}
 appName = ''
 criticality = ''
-business_unit = 'M3_PreVendas'
-owner = 'example@exe.com.br'
+businessUnit = ''
+owner = ''
 custom_fields = []
 squad = ''
 lider = ''
 po = ''
-possui_api = ''
+possuiApi = ''
 exposed = ''
 description = ''
 policy = ''
@@ -28,96 +28,13 @@ teams = ''
 bu_name = ''
 bu_id = ''
 app_profiles = []
-guid_profiles = []
-default_policy = 'Veracode Recommended Low'
+#default_policy = 'Veracode Recommended Low'
 teams_default = ['Showroom_Lucas', 'Showroom Pré-Vendas']
 
-# ---------------------------------------------- PAYLOAD  ---------------------------------------------- #
-
-payload = {
-    "guid": "string",
-    "id": 0,
-    "oid": 0,
-    "organization_id": 0,
-    "profile": {
-      "name": f"{appName}",
-      "business_criticality": f"{criticality}",
-      "business_owners": [
-        {
-          "email": f"{owner}",
-          "name": f"{owner}"
-        }
-      ],
-      "business_unit": {
-        "guid": f"{business_unit}"
-      },
-      "custom_field_values": [
-        {
-          "app_custom_field_name": {
-            "name": "custom_field",
-            "organization_id": 0,
-            "sort_order": 0
-          },
-          "field_name_id": 0,
-          "id": 0,
-          "value": "string"
-        }
-      ],
-      "custom_fields": [
-        {
-          "name": "Squad Responsável",
-          "value": f"{squad}"
-        },
-        {
-            "name": "Líder Técnico",
-            "value": f"{lider}"
-        },
-        {
-            "name": "Product Owner",
-            "value": f"{po}"
-        },
-        {
-            "name": "Possui API? (Sim ou Não)",
-            "value": f"{possui_api}"
-        },
-        {
-            "name": "Sofre exposição à internet” (Sim ou Não)",
-            "value": f"{exposed}"
-        }
-      ],
-      "description": f"{description}",
-      "name": "string",
-      "policies": [
-        {
-          "guid": f"{policy}",
-          "is_default": "true"
-        }
-      ],
-      "settings": {
-        "dynamic_scan_approval_not_required": "false",
-        "nextday_consultation_allowed": "true",
-        "sca_enabled": "true",
-        "static_scan_dependencies_allowed": "true"
-      },
-      "tags": "string",
-      "teams": [
-        {
-          "guid": f"{teams}"
-        }
-      ]
-    },
-    "scans": [
-      {
-        "internal_status": "string",
-        "status": "CREATED"
-      }
-    ]
-}
-
-json_str = json.dumps(payload)
 # ---------------------------------------------- FUNCOES  ---------------------------------------------- #
 
 def main():
+  
   parser = argparse.ArgumentParser(description='CLI para criação de Apps Profiles na plataforma Veracode')
 
   parser.add_argument('-app', required=True, help='Application Name')
@@ -136,14 +53,23 @@ def main():
   appName = args.app
   criticality = args.bc
   owner = args.ow
-  business_unit = args.bu
+  businessUnit = args.bu
   squad = args.sq
   po = args.po
-  possui_api = args.api
+  possuiApi = args.api
   exposed = args.exp
   description = args.desc
   policy = args.pol
   teams = args.t
+
+  print(json_str)
+
+'''
+  if not all(appName, criticality, owner, businessUnit, squad, po, possuiApi, exposed, description, policy, teams):
+      parser.print_usage()
+      exit(1)
+'''
+
 
 # Retorna o GUID da política
 def getPolicyGuid(p):
@@ -214,7 +140,102 @@ def getAppGuid(a):
         print(response.status_code)
 
 def createApp():
-    pass
+    try:
+        response = requests.post(api_base + "/applications", auth=RequestsAuthPluginVeracodeHMAC(), headers=headers, data=payload)
+    except requests.RequestException as e:
+        print("Whoops!")
+        print(e)
+        sys.exit(1)
+
+    if response.ok:
+        data = response.json()
+        print(response.status_code)
+
+# ---------------------------------------------- PAYLOAD  ---------------------------------------------- #
+
+payload = {
+    "guid": "string",
+    "id": 0,
+    "oid": 0,
+    "organization_id": 0,
+    "profile": {
+      "name": f'{appName}',
+      "business_criticality": f'{criticality}',
+      "business_owners": [
+        {
+          "email": f"{owner}",
+          "name": f"{owner}"
+        }
+      ],
+      "business_unit": {
+        "guid": f"{businessUnit}"
+      },
+      "custom_field_values": [
+        {
+          "app_custom_field_name": {
+            "name": "custom_field",
+            "organization_id": 0,
+            "sort_order": 0
+          },
+          "field_name_id": 0,
+          "id": 0,
+          "value": "string"
+        }
+      ],
+      "custom_fields": [
+        {
+          "name": "Squad Responsável",
+          "value": f"{squad}"
+        },
+        {
+            "name": "Líder Técnico",
+            "value": f"{lider}"
+        },
+        {
+            "name": "Product Owner",
+            "value": f"{po}"
+        },
+        {
+            "name": "Possui API? (Sim ou Não)",
+            "value": f"{possuiApi}"
+        },
+        {
+            "name": "Sofre exposição à internet” (Sim ou Não)",
+            "value": f"{exposed}"
+        }
+      ],
+      "description": f"{description}",
+      "name": "string",
+      "policies": [
+        {
+          "guid": f"{policy}",
+          "is_default": "true"
+        }
+      ],
+      "settings": {
+        "dynamic_scan_approval_not_required": "false",
+        "nextday_consultation_allowed": "true",
+        "sca_enabled": "true",
+        "static_scan_dependencies_allowed": "true"
+      },
+      "tags": "string",
+      "teams": [
+        {
+          "guid": f"{teams}"
+        }
+      ]
+    },
+    "scans": [
+      {
+        "internal_status": "string",
+        "status": "CREATED"
+      }
+    ]
+}
+
+json_str = json.dumps(payload)
+
+# ---------------------------------------------- EXECUCAO  ---------------------------------------------- #
 
 if __name__ == "__main__":
 
