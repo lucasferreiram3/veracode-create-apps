@@ -15,7 +15,8 @@ headers = {"User-Agent": "Python HMAC Example"}
 appName = ''
 criticality = ''
 businessUnit = ''
-owner = ''
+ownerName = ''
+ownerEmail = ''
 custom_fields = []
 squad = ''
 lider = ''
@@ -24,52 +25,31 @@ possuiApi = ''
 exposed = ''
 description = ''
 policy = ''
-teams = ''
+teams = []
+teams_default = ['Showroom_Lucas', 'Showroom Pré-Vendas']
 bu_name = ''
 bu_id = ''
 app_profiles = []
 #default_policy = 'Veracode Recommended Low'
-teams_default = ['Showroom_Lucas', 'Showroom Pré-Vendas']
 
 # ---------------------------------------------- FUNCOES  ---------------------------------------------- #
 
 def main():
-  
-  parser = argparse.ArgumentParser(description='CLI para criação de Apps Profiles na plataforma Veracode')
 
-  parser.add_argument('-app', required=True, help='Application Name')
-  parser.add_argument('-bc',  required=True, help='Business Criticality')
-  parser.add_argument('-ow', required=True, help='Business Owner')
-  parser.add_argument('-bu', required=True, help='Business Unit')
-  parser.add_argument('-sq', required=True, help='Squad')
-  parser.add_argument('-po', required=True, help='Product Owner')
-  parser.add_argument('-api', required=True, help='Possui API?')
-  parser.add_argument('-exp', required=True, help='Está exposto para Internet?')
-  parser.add_argument('-desc', required=True, help='Breve Descrição do App')
-  parser.add_argument('-pol', required=True, help='Política de segurança')
-  parser.add_argument('-t', required=True, help='Times responsáveis')
+  appName = input('Nome da aplicação: ')
+  criticality = input('Criticidade para o negócio: ')
+  businessUnit = input('Business Unit: ')
 
-  args = parser.parse_args()
-  appName = args.app
-  criticality = args.bc
-  owner = args.ow
-  businessUnit = args.bu
-  squad = args.sq
-  po = args.po
-  possuiApi = args.api
-  exposed = args.exp
-  description = args.desc
-  policy = args.pol
-  teams = args.t
+  while True:
+      t = input('Indique os Teams ou q para sair: ')
+      if t == 'q':
+          break
+      teams.append(t)
+      
+  policy = input('Indique a Policy: ')
 
-  print(json_str)
-
-'''
-  if not all(appName, criticality, owner, businessUnit, squad, po, possuiApi, exposed, description, policy, teams):
-      parser.print_usage()
-      exit(1)
-'''
-
+def createApp(appName, criticality, businessUnit, teams, policy, custom_fields, ownerName, ownerEmail):
+    Applications.create(app_name=appName, business_criticality=criticality, business_unit=getAppGuid(businessUnit), teams=getTeamsGuid(teams), policy_guid=getPolicyGuid(policy), custom_fields=custom_fields, bus_owner_name=ownerName, bus_owner_email=ownerEmail)
 
 # Retorna o GUID da política
 def getPolicyGuid(p):
@@ -93,11 +73,14 @@ def getBuGuid(b):
 
 # Retorna o GUID dos times
 def getTeamsGuid(t):
-    data = Teams().get_all(teams_default)
+    data = Teams().get_all(t)
+    team_id = []
+    
     for i in data:
-        if i["team_name"] in teams_default:
-            return i["team_id"]
-        
+      team_id.append(i["team_id"])
+    
+    return team_id
+
 # Retorna o perfil de aplicação já existe na plataforma      
 def checkAppProfile(appName):
     try:
@@ -138,102 +121,6 @@ def getAppGuid(a):
            return app["profile"]["business_unit"]["guid"]
     else:
         print(response.status_code)
-
-def createApp():
-    try:
-        response = requests.post(api_base + "/applications", auth=RequestsAuthPluginVeracodeHMAC(), headers=headers, data=payload)
-    except requests.RequestException as e:
-        print("Whoops!")
-        print(e)
-        sys.exit(1)
-
-    if response.ok:
-        data = response.json()
-        print(response.status_code)
-
-# ---------------------------------------------- PAYLOAD  ---------------------------------------------- #
-
-payload = {
-    "guid": "string",
-    "id": 0,
-    "oid": 0,
-    "organization_id": 0,
-    "profile": {
-      "name": f'{appName}',
-      "business_criticality": f'{criticality}',
-      "business_owners": [
-        {
-          "email": f"{owner}",
-          "name": f"{owner}"
-        }
-      ],
-      "business_unit": {
-        "guid": f"{businessUnit}"
-      },
-      "custom_field_values": [
-        {
-          "app_custom_field_name": {
-            "name": "custom_field",
-            "organization_id": 0,
-            "sort_order": 0
-          },
-          "field_name_id": 0,
-          "id": 0,
-          "value": "string"
-        }
-      ],
-      "custom_fields": [
-        {
-          "name": "Squad Responsável",
-          "value": f"{squad}"
-        },
-        {
-            "name": "Líder Técnico",
-            "value": f"{lider}"
-        },
-        {
-            "name": "Product Owner",
-            "value": f"{po}"
-        },
-        {
-            "name": "Possui API? (Sim ou Não)",
-            "value": f"{possuiApi}"
-        },
-        {
-            "name": "Sofre exposição à internet” (Sim ou Não)",
-            "value": f"{exposed}"
-        }
-      ],
-      "description": f"{description}",
-      "name": "string",
-      "policies": [
-        {
-          "guid": f"{policy}",
-          "is_default": "true"
-        }
-      ],
-      "settings": {
-        "dynamic_scan_approval_not_required": "false",
-        "nextday_consultation_allowed": "true",
-        "sca_enabled": "true",
-        "static_scan_dependencies_allowed": "true"
-      },
-      "tags": "string",
-      "teams": [
-        {
-          "guid": f"{teams}"
-        }
-      ]
-    },
-    "scans": [
-      {
-        "internal_status": "string",
-        "status": "CREATED"
-      }
-    ]
-}
-
-json_str = json.dumps(payload)
 
 # ---------------------------------------------- EXECUCAO  ---------------------------------------------- #
 
