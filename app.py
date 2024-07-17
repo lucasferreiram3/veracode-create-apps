@@ -11,7 +11,6 @@ import argparse
 # ---------------------------------------------- VARIAVEIS  ---------------------------------------------- #
 
 api_base = "https://api.veracode.com/appsec/v1"
-api_base2 = "https://api.veracode.com/api/authn/v2/"
 headers = {"User-Agent": "Python HMAC Example"}
 appName = ''
 criticality = ''
@@ -26,16 +25,12 @@ exposed = ''
 description = ''
 policy = ''
 teams = ''
-#bu_default = []
 bu_name = ''
 bu_id = ''
 app_profiles = []
 guid_profiles = []
 default_policy = 'Veracode Recommended Low'
 teams_default = ['Showroom_Lucas', 'Showroom Pré-Vendas']
-#default_policy = 'CIP Medium + SCA'
-#teams_default = ["DevSecOps", "CDE Projetos e Arquitetura de Segurança", "API-Services", "Auditoria Interna", "Cyber Security"]
-#business_unit = 'SAP'
 
 # ---------------------------------------------- PAYLOAD  ---------------------------------------------- #
 
@@ -123,27 +118,32 @@ json_str = json.dumps(payload)
 # ---------------------------------------------- FUNCOES  ---------------------------------------------- #
 
 def main():
- 
-  print(getBuGuid(business_unit))
-
-
-def args():
   parser = argparse.ArgumentParser(description='CLI para criação de Apps Profiles na plataforma Veracode')
 
-  parser.add_argument('--app-name', required=True, help='Application Name')
-  parser.add_argument('-criticality',  required=True, help='Business Criticality')
-  parser.add_argument('--owner', required=True, help='Business Owner')
-  parser.add_argument('--business-unit', required=True, help='Business Unit')
-  parser.add_argument('--squad', required=True, help='Squad')
-  parser.add_argument('--product-owner', required=True, help='Product Owner')
-  parser.add_argument('--possui-api', required=True, help='Possui API?')
-  parser.add_argument('--exposed', required=True, help='Está exposto para Internet?')
-  parser.add_argument('--description', required=True, help='Breve Descrição do App')
-  parser.add_argument('--policy', required=True, help='Política de segurança')
-  parser.add_argument('--teams', required=True, help='Times responsáveis')
+  parser.add_argument('-app', required=True, help='Application Name')
+  parser.add_argument('-bc',  required=True, help='Business Criticality')
+  parser.add_argument('-ow', required=True, help='Business Owner')
+  parser.add_argument('-bu', required=True, help='Business Unit')
+  parser.add_argument('-sq', required=True, help='Squad')
+  parser.add_argument('-po', required=True, help='Product Owner')
+  parser.add_argument('-api', required=True, help='Possui API?')
+  parser.add_argument('-exp', required=True, help='Está exposto para Internet?')
+  parser.add_argument('-desc', required=True, help='Breve Descrição do App')
+  parser.add_argument('-pol', required=True, help='Política de segurança')
+  parser.add_argument('-t', required=True, help='Times responsáveis')
 
   args = parser.parse_args()
-  appName = args.appname
+  appName = args.app
+  criticality = args.bc
+  owner = args.ow
+  business_unit = args.bu
+  squad = args.sq
+  po = args.po
+  possui_api = args.api
+  exposed = args.exp
+  description = args.desc
+  policy = args.pol
+  teams = args.t
 
 # Retorna o GUID da política
 def getPolicyGuid(p):
